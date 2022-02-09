@@ -1,0 +1,33 @@
+;; French War Problem
+(define y :: int)
+(define c :: int) 
+(define a :: int)
+(define i :: int) 
+(assert (> y 0))
+(assert (> c -1))
+(assert (> a -1))
+(assert (> i -1))
+
+;; Equation
+(assert (= y (+ (+ (* 15 c) (* 20 a)) (* 15 i))))
+
+;; Assertions
+(assert (> 51 (+ (+ (* 2 c) (* 5 a)) (* 3 i))))
+(assert (> 21 (+ (+ (* 2 c) (* 1 a)) (* 1 i))))
+(assert (> 16 (+ (+ (* 1 c) (* 1 a)) (* 4 i))))
+(assert (> 61 (+ (+ (* 4 c) (* 3 a)) (* 2 i))))
+
+
+
+
+;; NOTE: You must place the following CEGAR comment to run the CEGAR loop.
+;; The LppCegarRunner.java by default is trying to optimize the y variable
+;; You may need to change that based on your model here. 
+
+;; CEGAR
+(assert (> y 235))
+
+
+;; Check and show the identified solution
+(check)
+(show-model)

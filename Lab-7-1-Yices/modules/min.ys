@@ -1,0 +1,38 @@
+;;public static int min(int a, int b) {
+;;	int min = a;
+;;	if(min < b)
+;;	min = b;
+;;	return min;
+;;}
+
+(define a :: int) 
+(define b :: int)
+(define min :: int)
+(define rv :: int) 
+
+;; Intermediate variables 
+
+(define min1 :: int) 
+(define c :: bool)
+
+;; Precondition
+
+;; model the Body
+
+(assert (= min a)) 
+(assert (= c (< min b)))
+(assert (=> c (= min1 b)))
+(assert (=> c (= rv min1)))
+(assert (=> (not c) (= rv min)))
+
+;; Post condition - trys to fine a situation which this is false
+
+(assert 
+	(not 
+		(and (<= rv a) (<= rv b))
+	)
+)	
+
+(check)
+(show-model)
+	

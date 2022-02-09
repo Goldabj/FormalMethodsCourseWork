@@ -1,0 +1,37 @@
+;// Pre-Condition: a, b, and c are ints
+;	public static int min(int a, int b, int c) {
+;		if(a < b && b < c)
+;			return a;
+;		if(b < a && a < c)
+;			return b;
+;		return c;
+;	}
+
+;	// Post-Condition: rv <= a and rv <= b and rv <= c
+
+
+(define a :: int)
+(define b :: int)
+(define c :: int)
+(define rv :: int)
+(define cond :: bool)
+(define cond2 :: bool)
+
+; ------------- Program -------------
+
+(assert (= cond (and (< a b) (< b c))))
+(assert (=> cond (= rv a)))
+
+(assert (= cond2 (and (< b a) (< a c))))
+(assert (=> cond2 (= rv b)))
+
+(assert (=> (and (not cond) (not cond2)) (= rv c)))
+
+; ------------ find bug ------------
+
+(assert (not 
+	(and (and (<= rv a) (<= rv b)) (<= rv c))
+))
+
+(check) 
+(show-model) 

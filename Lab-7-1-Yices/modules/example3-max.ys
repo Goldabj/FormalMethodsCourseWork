@@ -1,0 +1,24 @@
+;public static int max(int a, int b) {
+;		if(a > b)
+;			return a;
+;		return b;
+;	}
+
+
+(define a :: int)
+(define b :: int)
+(define rv :: int)
+(define cond :: bool)
+
+
+(assert (= cond (> a b)))
+(assert (=> cond (= rv a)))
+(assert (=> (not cond) (= rv b)))
+
+; verificatoin post condition - rv >= a and rv >= b
+
+(assert (not
+	(and (>= rv a) (>= rv b))
+))
+
+(check)

@@ -1,0 +1,106 @@
+---------------------------- MODULE Partitioning ----------------------------
+EXTENDS Integers, Sequences
+
+CONSTANTS N
+
+
+(***
+--fair algorithm Partition {
+    variables array \in [1..N -> Int], pivot \in Int, 
+            i = 1, j = Len(array), 
+            returnValue;
+    {
+        while (i <= j) {
+            while (i <= j /\ array[i] < pivot) {
+                i := i + 1
+            };
+            while (i <= j /\ array[j] > pivot) {
+                j := j - 1
+            };
+            if (i <= j) {
+                with (temp = array[i]) {
+                    array[i] := array[j] ||
+                    array[j] := temp;
+                    i := i + 1;
+                    j := j - 1
+                }
+            }
+        };
+        if (i <= Len(array) /\ array[i] = pivot) {
+            returnValue := i
+         }else {
+            returnValue := i -1
+         }       
+    }
+}
+
+***) 
+\* BEGIN TRANSLATION
+CONSTANT defaultInitValue
+VARIABLES array, pivot, i, j, returnValue, pc
+
+vars == << array, pivot, i, j, returnValue, pc >>
+
+Init == (* Global variables *)
+        /\ array \in [1..N -> Int]
+        /\ pivot \in Int
+        /\ i = 1
+        /\ j = Len(array)
+        /\ returnValue = defaultInitValue
+        /\ pc = "Lbl_1"
+
+Lbl_1 == /\ pc = "Lbl_1"
+         /\ IF i <= j
+               THEN /\ pc' = "Lbl_2"
+                    /\ UNCHANGED returnValue
+               ELSE /\ IF i <= Len(array) /\ array[i] = pivot
+                          THEN /\ returnValue' = i
+                          ELSE /\ returnValue' = i -1
+                    /\ pc' = "Done"
+         /\ UNCHANGED << array, pivot, i, j >>
+
+Lbl_2 == /\ pc = "Lbl_2"
+         /\ IF i <= j /\ array[i] < pivot
+               THEN /\ i' = i + 1
+                    /\ pc' = "Lbl_2"
+               ELSE /\ pc' = "Lbl_3"
+                    /\ i' = i
+         /\ UNCHANGED << array, pivot, j, returnValue >>
+
+Lbl_3 == /\ pc = "Lbl_3"
+         /\ IF i <= j /\ array[j] > pivot
+               THEN /\ j' = j - 1
+                    /\ pc' = "Lbl_3"
+                    /\ UNCHANGED << array, i >>
+               ELSE /\ IF i <= j
+                          THEN /\ LET temp == array[i] IN
+                                    /\ array' = [array EXCEPT ![i] = array[j],
+                                                              ![j] = temp]
+                                    /\ i' = i + 1
+                                    /\ j' = j - 1
+                          ELSE /\ TRUE
+                               /\ UNCHANGED << array, i, j >>
+                    /\ pc' = "Lbl_1"
+         /\ UNCHANGED << pivot, returnValue >>
+
+Next == Lbl_1 \/ Lbl_2 \/ Lbl_3
+           \/ (* Disjunct to prevent deadlock on termination *)
+              (pc = "Done" /\ UNCHANGED vars)
+
+Spec == /\ Init /\ [][Next]_vars
+        /\ WF_vars(Next)
+
+Termination == <>(pc = "Done")
+
+\* END TRANSLATION
+
+PartialCorrectness == (pc = "Done") => ((\A k \in 1..returnValue : array[k] <= pivot) 
+                                    /\ (\A k \in (returnValue + 1)..Len(array) : pivot <= array[k]))
+
+
+
+
+=============================================================================
+\* Modification History
+\* Last modified Tue May 16 20:46:17 EDT 2017 by Goldacbj
+\* Created Tue May 16 19:03:08 EDT 2017 by Goldacbj
